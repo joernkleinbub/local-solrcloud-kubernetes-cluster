@@ -1,0 +1,36 @@
+- name: Copy basics manifest to ~/manifest
+  become: false
+  copy:
+    src: basics.yml
+    dest: ~/manifests/basics.yml
+- name: Copy PersistantVolumes Manifest to ~/manifest
+  become: false
+  template:
+    src: persistantvolumes.yml
+    dest: "~/manifests/persistantvolumes.yml"
+- name: Copy zookeeper statefulset manifest to ~/manifest
+  become: false
+  copy:
+    src: zookeeper.yml
+    dest: ~/manifests/zookeeper.yml
+- name: Copy solr manifest to ~/manifest
+  become: false
+  copy:
+    src: solr.yml
+    dest: ~/manifests/solr.yml
+- name: install basics docker image
+  command: kubectl apply -f ~/manifests/basics.yml
+  become: false
+  ignore_errors: yes
+- name: install persistantvolumes docker image
+  command: kubectl apply -f ~/manifests/persistantvolumes.yml
+  become: false
+  ignore_errors: yes
+- name: install zookeeper docker image
+  command: kubectl apply -f ~/manifests/zookeeper.yml
+  become: false
+  ignore_errors: yes
+- name: install solr docker image
+  command: kubectl apply -f ~/manifests/solr.yml
+  become: false
+  ignore_errors: yes

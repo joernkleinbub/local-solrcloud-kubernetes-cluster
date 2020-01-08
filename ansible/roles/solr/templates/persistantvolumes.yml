@@ -1,0 +1,52 @@
+{% for node in groups['nodes'] %}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: "pv-zk-{{ hostvars[node].ansible_host }}"
+  namespace: solr
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage-zookeeper
+  local:
+    path: /mnt/zookeeper
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - "{{ hostvars[node].ansible_host }}"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: "pv-solr-{{ hostvars[node].ansible_host }}"
+  namespace: solr
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage-solr
+  local:
+    path: /mnt/solr
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - "{{ hostvars[node].ansible_host }}"
+{% endfor %}

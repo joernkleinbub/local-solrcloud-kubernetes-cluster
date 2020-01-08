@@ -1,0 +1,127 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: local-storage-solr
+  namespace: solr
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+---
+
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  labels:
+    k8s-app: solr
+  name: solr-settings
+  namespace: solr
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: solr-hs
+  labels:
+    app: solr-app
+spec:
+  clusterIP: None
+  selector:
+    app: solr-app
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    k8s-app: solr
+  name: solr
+  namespace: solr
+spec:
+  ports:
+    - port: 8981
+      targetPort: 8983
+      nodePort: 30001
+  selector:
+    k8s-app: solr
+  type: NodePort
+
+
+---
+
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  labels:
+    k8s-app: solr
+  name: solr
+  namespace: solr
+spec:
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: solr
+  updateStrategy:
+    type: RollingUpdate
+  serviceName: solr-hs
+  template:
+    metadata:
+      labels:
+        k8s-app: solr
+      annotations:
+        seccomp.security.alpha.kubernetes.io/pod: 'runtime/default'
+    spec:
+      hostNetwork: false
+      dnsPolicy: ClusterFirst
+      containers:
+        - name: solr
+          image: solr:8.3
+          ports:
+            - containerPort: 8983
+              protocol: TCP
+          env:
+            - name: ZK_HOST
+              value: "zk-0.zk-hs.solr.svc.cluster.local:2181,zk-1.zk-hs.solr.svc.cluster.local:2181,zk-2.zk-hs.solr.svc.cluster.local:2181"
+          args:
+            - -c
+          livenessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            httpGet:
+              scheme: "HTTP"
+              path: /solr/admin/info/system
+              port: 8983
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds:  15
+            httpGet:
+              scheme: "HTTP"
+              path: /solr/admin/info/system
+              port: 8983
+          volumeMounts:
+            - mountPath: "/var/solr"
+              name: datadir-solr
+              readOnly: false
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 1000
+            runAsGroup: 1000
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      # Comment the following tolerations if Dashboard must not be deployed on master
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+  volumeClaimTemplates:
+    - metadata:
+        name: datadir-solr
+      spec:
+        storageClassName: local-storage-solr
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 10Gi
