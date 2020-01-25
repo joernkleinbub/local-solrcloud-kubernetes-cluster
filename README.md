@@ -3,6 +3,25 @@
 [YOTRON](http://www.yotron.de) is a consultancy company which is focused on DevOps, Cloudmanagement and 
 Data Management with NOSQL and SQL-Databases. Visit us on [ www.yotron.de ](http://www.yotron.de)
 
+# content
+ - [Local SolrCloud, Apache Lucene, Kubernetes Cluster](#local-solrcloud,-apache-lucene,-kubernetes-cluster)
+
+     - [Requirements](#requirements)
+
+     - [Startup](#startup)
+
+     - [Checks](#checks)
+
+     - [Dashboard](#dashboard)
+
+     - [Kubernetes](#kubernetes)
+
+     - [Setup of Kubernetes for the SolrCloud and Zookeeper](#setup-of-kubernetes-for-the-solrcloud-and-zookeeper)
+
+     - [own credentials](#own-credentials)
+     
+(this Menu was created by [Markdown Menu](https://www.markdownmenu.com))
+
 # Local SolrCloud, Apache Lucene, Kubernetes Cluster
 With this project you can create a SOLR/Apache Lucene as a SolrCloud cluster on your local machine. The project based widely on our
 other project `local-kubernetes-cluster` (https://github.com/yotron/local-kubernetes-cluster) with which you can create
