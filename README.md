@@ -4,7 +4,7 @@
 Data Management with NOSQL and SQL-Databases. Visit us on [ www.yotron.de ](http://www.yotron.de)
 
 # content
- - [Local SolrCloud, Apache Lucene, Kubernetes Cluster](#local-solrcloud,-apache-lucene,-kubernetes-cluster)
+ - [Local SolrCloud, Apache Lucene, Kubernetes Cluster](#local-solrcloud-apache-lucene-kubernetes-cluster)
 
      - [Requirements](#requirements)
 
